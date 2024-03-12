@@ -1,0 +1,38 @@
+#!/bin/bash
+#SBATCH -A MLMI-gtj21-SL2-GPU
+#SBATCH -J NLUDST_TRAIN_GPT2
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --gres=gpu:1
+#SBATCH --time=2:00:00
+#SBATCH --mail-type=FAIL
+#! Uncomment this to prevent the job from being requeued (e.g. if
+#! interrupted by node failure or system downtime):
+#SBATCH --no-requeue
+#SBATCH -p ampere
+#SBATCH --output=tf_train_%j.log    # Standard output and error log
+#SBATCH --error=tf_train_%j.err     # Error log
+#! ############################################################
+
+
+. /etc/profile.d/modules.sh                # Leave this line (enables the module command)
+module purge                               # Removes all modules still loaded
+module load rhel8/default-amp
+module load cuda/11.1 intel/mkl/2017.4
+export OMP_NUM_THREADS=1
+
+module load slurm
+module load anaconda/3.2019-10
+eval "$(conda shell.bash hook)"
+
+# Activate your Python virtual environment or Conda environment
+source /myenv/bin/activate
+
+
+# Navigate to your script's directory
+cd ./src/train
+
+# Finally, run your script
+python train.py
+
+# Note: Adjust the above python command line to include any arguments your script needs.
